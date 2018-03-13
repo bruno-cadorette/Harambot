@@ -6,7 +6,7 @@ import datetime
 
 def read(fp, keep_event=False):
     """
-    Read the json file and only keep messages
+    Read the json file and only keep messages and events if selected.
     Args:
         fp (str): filepath to the json file
         keep_event (boolean): Keep 'event' type or not (Can cause error to parse senderID)
@@ -14,9 +14,11 @@ def read(fp, keep_event=False):
     Returns: DataFrame
 
     """
+    columns = ['body', 'type', 'senderID', 'timestamp', 'messageReactions'] + (['eventData'] if keep_event else [])
+    accepted_types = ['message'] + (['event'] if keep_event else [])
     dt = pd.DataFrame(json.load(open(fp)))
-    dt = dt[['body', 'type', 'senderID', 'timestamp', 'messageReactions'] + (['eventData'] if keep_event else [])]
-    dt = dt[np.isin(dt.type, ['message'] + (['event'] if keep_event else []))]
+    dt = dt[columns]
+    dt = dt[np.isin(dt.type, accepted_types)]
     return dt
 
 
