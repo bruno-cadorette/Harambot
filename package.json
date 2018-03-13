@@ -9,6 +9,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "json2csv": "^3.11.1"
+    "facebook-chat-api": "https://github.com/bruno-cadorette/facebook-chat-api"
   }
 }

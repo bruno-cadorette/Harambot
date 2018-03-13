@@ -1,7 +1,6 @@
 const request = require('request');
 const login = require("facebook-chat-api");
 const fs = require('fs');
-const json2csv = require('json2csv');
 const threadId = 0 //replace this
 const email = ""; //replace this
 const password = ""; //replace this
