@@ -1,9 +1,6 @@
 const request = require('request');
 const login = require("facebook-chat-api");
 const fs = require('fs');
-const threadId = 1466321733403665 //replace this
-//const email = ""; //replace this
-//const password = ""; //replace this
 
 
 function downloadUntilTime(api, timestamp, callback){
@@ -12,7 +9,7 @@ function downloadUntilTime(api, timestamp, callback){
     },xs => xs.any(x=>x.timestamp < timestamp), 100);
 }
 
-function download(api, resultCallback, shouldStop, batchSize){
+function download(api, threadId, resultCallback, shouldStop, batchSize){
     (function downloadImpl(lst, timestamp){
         api.getThreadHistoryGraphQL(threadId, batchSize, timestamp, function (err, xs) {
             console.log("downloading... Downloaded: " + (lst.length + xs.length)+ " messages");
@@ -35,28 +32,18 @@ function download(api, resultCallback, shouldStop, batchSize){
     })([], undefined);
 }
 
-function downloadAllData(api, resultCallback){
-    download(api, resultCallback, _ => false, 5000);
+function downloadAllData(api, threadId, resultCallback){
+    download(api, threadId, resultCallback, _ => false, 5000);
 }
 
-function listen(api){
-    api.listen(function(err, msg){
-        console.log(msg);
-        if(err || msg.threadID != threadId){
-            return;
-        }
-        console.log("Got message from groupchat")
-    });
-}
-
-function downloadThreadData(email, password){
-	console.log(email + password)
+function downloadThreadData(email, password, threadId){
+	console.log(email + password + threadId)
     login({email: email, password: password}, function (err, api){
         if(err) {
             console.log(err);
             return;
         }
-        downloadAllData(api, data => {
+        downloadAllData(api, threadId, data => {
             fs.writeFile("result.json", JSON.stringify(data), function(err) {
             if(err) {
                 return console.log(err);
