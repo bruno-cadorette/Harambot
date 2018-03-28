@@ -9,6 +9,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "facebook-chat-api": "https://github.com/bruno-cadorette/facebook-chat-api"
+    "express": "^4.16.3",
+    "facebook-chat-api": "https://github.com/bruno-cadorette/facebook-chat-api",
+    "request": "^2.85.0"
   }
 }
