@@ -18,7 +18,7 @@ def read(fp, keep_event=False):
     Returns: DataFrame
 
     """
-    columns = ['body', 'type', 'senderID', 'timestamp', 'messageReactions'] + (['eventData'] if keep_event else [])
+    columns = ['body', 'type', 'senderID', 'timestamp', 'messageReactions'] + (['eventData', 'eventType'] if keep_event else [])
     accepted_types = ['message'] + (['event'] if keep_event else [])
     dt = pd.DataFrame(json.load(open(fp)))
     dt = dt[columns]
@@ -91,3 +91,21 @@ def get_emote_per_user(dt):
                 emotes_per_person_received[senderId][react['reaction']] += 1
                 emotes_per_person_given[react['userID']][react['reaction']] += 1
     return pd.DataFrame.from_dict(emotes_per_person_received), pd.DataFrame.from_dict(emotes_per_person_given)
+
+
+def get_nicknames(dt):
+    """
+    Get the previous nicknames for all members
+    Args:
+        dt (Dataframe): Loaded **with** events.
+
+    Returns:
+        Dataframe with column 'nickname', grouped_by the senderId
+    """
+    dt = dt[np.isin(dt.type, 'event')]
+    dt = dt[dt.eventType == 'change_thread_nickname']
+    dt['nickname'] = dt.apply(lambda k: k['eventData']['nickname'], 1)
+    dt['participantID'] = dt.apply(lambda k: k['eventData']['participantID'], 1)
+    dt['senderId'] = dt.apply(lambda k: k['eventData']['participantID'], 1)
+    dt = dt.sort_values('timestamp').groupby('participantID')
+    return dt
